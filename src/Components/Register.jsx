@@ -1,66 +1,51 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-// Import the registerUser thunk action from your authSlice
 import { registerUser } from "../redux/slices/authSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
-// Helper function for basic email validation
-const validateEmail = (email) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const Register = () => {
-  // Redux state selectors
   const { isLoading, error, isAuthenticated } = useSelector(
     (state) => state.auth
   );
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Local component state for form inputs and validation errors
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState(""); // Bonus
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [errors, setErrors] = useState({});
 
-  // Effect to clear errors when input changes
   useEffect(() => {
     setErrors({});
   }, [name, email, password, passwordConfirmation]);
 
-  // Effect to handle redirection or success message upon successful registration
+  // ✅ Redirect user after successful registration
   useEffect(() => {
     if (isAuthenticated) {
-      // **TODO: Add logic for redirection (e.g., to dashboard) here**
-      console.log("User successfully registered and authenticated!");
+      navigate("/dashboard");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
-  // Client-side form validation
   const validateForm = () => {
     const newErrors = {};
 
-    if (!name) {
-      newErrors.name = "Name is required.";
-    }
+    if (!name) newErrors.name = "Name is required.";
 
-    if (!email) {
-      newErrors.email = "Email is required.";
-    } else if (!validateEmail(email)) {
-      newErrors.email = "Invalid email format.";
-    }
+    if (!email) newErrors.email = "Email is required.";
+    else if (!validateEmail(email)) newErrors.email = "Invalid email format.";
 
-    if (!password) {
-      newErrors.password = "Password is required.";
-    } else if (password.length < 6) {
+    if (!password) newErrors.password = "Password is required.";
+    else if (password.length < 6)
       newErrors.password = "Password must be at least 6 characters.";
-    }
 
-    if (!passwordConfirmation) {
+    if (!passwordConfirmation)
       newErrors.passwordConfirmation = "Confirm your password.";
-    } else if (password !== passwordConfirmation) {
+    else if (password !== passwordConfirmation)
       newErrors.passwordConfirmation = "Passwords do not match.";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -68,9 +53,7 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (validateForm()) {
-      // Dispatch the registerUser async thunk with user data
       dispatch(
         registerUser({
           name,
@@ -83,28 +66,23 @@ const Register = () => {
   };
 
   return (
-    // Main container for the page, centered content
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-6">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-3xl border border-gray-100">
-        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-blue-100 p-4">
+      <div className="w-full max-w-md bg-white/90 backdrop-blur-lg p-8 rounded-2xl shadow-xl border border-blue-100 transition-all duration-300 hover:shadow-2xl">
+        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-3">
           Create an Account
         </h2>
         <p className="text-center text-gray-600 mb-8">
-          Start your journey with us today.
+          Start your journey with us today ✨
         </p>
 
-        {/* Display Redux global error */}
         {error && (
-          <div
-            className="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg"
-            role="alert"
-          >
-            <span className="font-medium">Registration Failed:</span> {error}
+          <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+            <strong>Registration Failed:</strong> {error}
           </div>
         )}
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Name Field */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name */}
           <div>
             <label
               htmlFor="name"
@@ -112,28 +90,23 @@ const Register = () => {
             >
               Full Name
             </label>
-            <div className="mt-1">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={`appearance-none block w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out sm:text-sm ${
-                  errors.name
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                }`}
-              />
-            </div>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm transition duration-150 ${
+                errors.name
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              }`}
+            />
             {errors.name && (
-              <p className="mt-2 text-sm text-red-600">{errors.name}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
             )}
           </div>
 
-          {/* Email Field */}
+          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -141,28 +114,23 @@ const Register = () => {
             >
               Email Address
             </label>
-            <div className="mt-1">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`appearance-none block w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out sm:text-sm ${
-                  errors.email
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                }`}
-              />
-            </div>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm transition duration-150 ${
+                errors.email
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              }`}
+            />
             {errors.email && (
-              <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
             )}
           </div>
 
-          {/* Password Field */}
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -170,28 +138,23 @@ const Register = () => {
             >
               Password
             </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`appearance-none block w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out sm:text-sm ${
-                  errors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                }`}
-              />
-            </div>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm transition duration-150 ${
+                errors.password
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              }`}
+            />
             {errors.password && (
-              <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
           </div>
 
-          {/* Password Confirmation Field (Bonus) */}
+          {/* Confirm Password */}
           <div>
             <label
               htmlFor="passwordConfirmation"
@@ -199,79 +162,51 @@ const Register = () => {
             >
               Confirm Password
             </label>
-            <div className="mt-1">
-              <input
-                id="passwordConfirmation"
-                name="passwordConfirmation"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={passwordConfirmation}
-                onChange={(e) => setPasswordConfirmation(e.target.value)}
-                className={`appearance-none block w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out sm:text-sm ${
-                  errors.passwordConfirmation
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                }`}
-              />
-            </div>
+            <input
+              id="passwordConfirmation"
+              type="password"
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm placeholder-gray-400 focus:outline-none sm:text-sm transition duration-150 ${
+                errors.passwordConfirmation
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              }`}
+            />
             {errors.passwordConfirmation && (
-              <p className="mt-2 text-sm text-red-600">
+              <p className="mt-1 text-sm text-red-600">
                 {errors.passwordConfirmation}
               </p>
             )}
           </div>
 
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white transition duration-200 ease-in-out ${
-                isLoading
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              }`}
-            >
-              {isLoading ? (
-                // Loading Indicator
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Registering...
-                </>
-              ) : (
-                "Register"
-              )}
-            </button>
-          </div>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full flex justify-center items-center py-2 px-4 rounded-lg text-sm font-medium text-white transition duration-200 ${
+              isLoading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 focus:ring-2 focus:ring-blue-400"
+            }`}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
+          </button>
         </form>
 
-        {/* Switch to Login Link */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
+              className="font-medium text-blue-600 hover:text-blue-500"
             >
               Sign in here
             </Link>

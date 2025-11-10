@@ -31,6 +31,9 @@ const loginUser = createAsyncThunk(
   }
 );
 
+// Mock logout action - add this to your authSlice.js
+const mockLogout = () => ({ type: "auth/logout" });
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -76,5 +79,5 @@ const authSlice = createSlice({
   },
 });
 
-export { registerUser, loginUser };
+export { registerUser, loginUser, mockLogout };
 export default authSlice.reducer;
