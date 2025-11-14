@@ -21,13 +21,13 @@ const EventCard = ({ event, onViewDetails }) => {
         </p>
         <div className="space-y-2 mb-4">
           <div className="flex items-center text-gray-500 text-sm">
-            <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+            <MapPin className="w-4 h-4 mr-2 shrink-0" />
             <span className="line-clamp-1">
               {event.location || "Location TBA"}
             </span>
           </div>
           <div className="flex items-center text-gray-500 text-sm">
-            <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+            <Calendar className="w-4 h-4 mr-2 shrink-0" />
             <span>{formatDate(eventDate)}</span>
           </div>
         </div>

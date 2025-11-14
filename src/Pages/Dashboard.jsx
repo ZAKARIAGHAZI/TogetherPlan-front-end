@@ -1,119 +1,75 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Search, Calendar, MapPin, Loader2, AlertCircle } from "lucide-react";
-import {
-  fetchEvents,
-  fetchEventDetails,
-  setSearchTerm,
-  clearError,
-} from "../redux/slices/eventsSlice";
-import EventCard from "../Components/EventCard";
+import { fetchEvents } from "../redux/slices/eventsSlice";
+import { Calendar, Users, BarChart3 } from "lucide-react";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { filteredEvents, loading, error, searchTerm } = useSelector(
-    (state) => state.events
-  );
-  const [localSearch, setLocalSearch] = useState("");
+  const { events, loading } = useSelector((state) => state.events);
 
   useEffect(() => {
     dispatch(fetchEvents());
   }, [dispatch]);
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setLocalSearch(value);
-    dispatch(setSearchTerm(value));
-  };
+  const totalEvents = events.length;
+  const totalParticipants = events.reduce(
+    (acc, e) => acc + (e.participants?.length || 0),
+    0
+  );
 
-  const handleViewDetails = (eventId) => {
-    dispatch(fetchEventDetails(eventId));
-  };
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Overview</h2>
 
-  const handleRefresh = () => {
-    dispatch(clearError());
-    dispatch(fetchEvents());
-  };
-
-return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            📅 My Events Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Discover and manage your upcoming events
-          </p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="mb-8">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search events, locations..."
-              value={localSearch}
-              onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-            />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="bg-white p-5 rounded-[22px] border border-gray-200 flex items-center gap-4">
+          <Calendar className="text-indigo-500" size={36} />
+          <div>
+            <h3 className="text-gray-600">Total Events</h3>
+            <p className="text-2xl font-bold">{totalEvents}</p>
           </div>
         </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+        <div className="bg-white p-5 rounded-[22px] border border-gray-200 flex items-center gap-4">
+          <Users className="text-green-500" size={36} />
+          <div>
+            <h3 className="text-gray-600">Total Participants</h3>
+            <p className="text-2xl font-bold">{totalParticipants}</p>
           </div>
-        )}
-
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 flex items-start justify-between">
-            <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-red-800 font-medium">Error loading events</p>
-                <p className="text-red-600 text-sm mt-1">{error}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleRefresh}
-              className="text-red-600 hover:text-red-800 text-sm font-medium ml-4"
-            >
-              Retry
-            </button>
+        </div>
+        <div className="bg-white p-5 rounded-[22px] border border-gray-200 flex items-center gap-4">
+          <BarChart3 className="text-orange-500" size={36} />
+          <div>
+            <h3 className="text-gray-600">Upcoming</h3>
+            <p className="text-2xl font-bold">
+              {events.filter((e) => new Date(e.date) > new Date()).length}
+            </p>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Events Grid */}
-        {!loading && !error && (
-          <>
-            {filteredEvents.length > 0 ? (
-              <>
-                <div className="mb-4 text-gray-600">
-                  Showing {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredEvents.map((event) => (
-                    <EventCard 
-                      key={event.id} 
-                      event={event}
-                      onViewDetails={handleViewDetails}
-                    />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-20">
-                <p className="text-gray-500 text-lg">
-                  {searchTerm ? 'No events found matching your search.' : 'No events available yet.'}
+      {/* Recent Events */}
+      <div className="bg-white rounded-[22px] border border-gray-200 p-5">
+        <h3 className="text-lg font-semibold mb-4">Recent Events</h3>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {events.slice(0, 6).map((event) => (
+              <div
+                key={event.id}
+                className="border rounded-lg p-4 hover:shadow-md transition bg-white"
+              >
+                <h4 className="text-lg font-semibold text-gray-800">
+                  {event.title}
+                </h4>
+                <p className="text-sm text-gray-500 mb-2">{event.location}</p>
+                <p className="text-sm text-gray-600 line-clamp-2">
+                  {event.description || "No description provided."}
                 </p>
               </div>
-            )}
-          </>
+            ))}
+          </div>
         )}
       </div>
     </div>

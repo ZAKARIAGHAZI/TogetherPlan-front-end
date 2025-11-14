@@ -1,116 +1,77 @@
-import {
-  createSlice,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
-// API Service with Sanctum authentication
+const token = localStorage.getItem("token");
+
+const apiHeaders = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  "X-Requested-With": "XMLHttpRequest",
+  Authorization: `Bearer ${token}`,
+};
+
+// -------------------- API SERVICE --------------------
 const apiService = {
-  // Fetch all events
   fetchEvents: async () => {
-    const response = await fetch(`http://localhost:8000/api/events`, {
+    const response = await fetch(`${API_BASE_URL}/events`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      credentials: "include", 
+      headers: apiHeaders,
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch events: ${response.statusText}`);
+      throw new Error("Failed to fetch events");
     }
 
     return response.json();
   },
 
-  // Fetch single event
   fetchEvent: async (eventId) => {
     const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      credentials: "include",
+      headers: apiHeaders,
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch event: ${response.statusText}`);
+      throw new Error("Failed to fetch event details");
     }
 
     return response.json();
   },
 
-  // Create new event
   createEvent: async (eventData) => {
     const response = await fetch(`${API_BASE_URL}/events`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      credentials: "include",
+      headers: apiHeaders,
       body: JSON.stringify(eventData),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to create event: ${response.statusText}`);
+      throw new Error("Failed to create event");
     }
 
     return response.json();
   },
 
-  // Update event
-  updateEvent: async (eventId, eventData) => {
-    const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      credentials: "include",
-      body: JSON.stringify(eventData),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to update event: ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-
-  // Delete event
   deleteEvent: async (eventId) => {
     const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      credentials: "include",
+      headers: apiHeaders,
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to delete event: ${response.statusText}`);
+      throw new Error("Failed to delete event");
     }
 
-    return response.json();
+    return eventId;
   },
 };
 
-// Redux Async Thunks
-const fetchEvents = createAsyncThunk(
+// -------------------- ASYNC THUNKS --------------------
+export const fetchEvents = createAsyncThunk(
   "events/fetchEvents",
   async (_, { rejectWithValue }) => {
     try {
       const data = await apiService.fetchEvents();
-      // Handle both array response and object with data property
       return Array.isArray(data) ? data : data.data || [];
     } catch (error) {
       return rejectWithValue(error.message);
@@ -118,43 +79,40 @@ const fetchEvents = createAsyncThunk(
   }
 );
 
-const fetchEventDetails = createAsyncThunk(
+export const fetchEventDetails = createAsyncThunk(
   "events/fetchEventDetails",
   async (eventId, { rejectWithValue }) => {
     try {
-      const data = await apiService.fetchEvent(eventId);
-      return data;
+      return await apiService.fetchEvent(eventId);
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-const createEvent = createAsyncThunk(
+export const createEvent = createAsyncThunk(
   "events/createEvent",
   async (eventData, { rejectWithValue }) => {
     try {
-      const data = await apiService.createEvent(eventData);
-      return data;
+      return await apiService.createEvent(eventData);
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-const deleteEvent = createAsyncThunk(
+export const deleteEvent = createAsyncThunk(
   "events/deleteEvent",
   async (eventId, { rejectWithValue }) => {
     try {
-      await apiService.deleteEvent(eventId);
-      return eventId;
+      return await apiService.deleteEvent(eventId);
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-// Redux Slice
+// -------------------- SLICE --------------------
 const eventsSlice = createSlice({
   name: "events",
   initialState: {
@@ -167,40 +125,29 @@ const eventsSlice = createSlice({
     actionLoading: false,
     actionError: null,
   },
-  reducers: {
-    setEvents: (state, action) => {
-      state.events = action.payload;
-      state.filteredEvents = action.payload;
-    },
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
-    },
-    setSearchTerm: (state, action) => {
-      state.searchTerm = action.payload;
-      state.filteredEvents = state.events.filter((event) => {
-        const title = event.title?.toLowerCase() || "";
-        const location = event.location?.toLowerCase() || "";
-        const description = event.description?.toLowerCase() || "";
-        const searchLower = action.payload.toLowerCase();
 
+  reducers: {
+    setSearchTerm: (state, action) => {
+      state.searchTerm = action.payload.toLowerCase();
+      state.filteredEvents = state.events.filter((event) => {
+        const search = state.searchTerm;
         return (
-          title.includes(searchLower) ||
-          location.includes(searchLower) ||
-          description.includes(searchLower)
+          event.title?.toLowerCase().includes(search) ||
+          event.location?.toLowerCase().includes(search) ||
+          event.description?.toLowerCase().includes(search)
         );
       });
     },
+
     clearError: (state) => {
       state.error = null;
       state.actionError = null;
     },
   },
+
   extraReducers: (builder) => {
     builder
-      // Fetch Events
+      // -------- Fetch events --------
       .addCase(fetchEvents.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -212,9 +159,10 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchEvents.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch events";
+        state.error = action.payload;
       })
-      // Fetch Event Details
+
+      // -------- Fetch single event --------
       .addCase(fetchEventDetails.pending, (state) => {
         state.actionLoading = true;
         state.actionError = null;
@@ -225,9 +173,10 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchEventDetails.rejected, (state, action) => {
         state.actionLoading = false;
-        state.actionError = action.payload || "Failed to fetch event details";
+        state.actionError = action.payload;
       })
-      // Create Event
+
+      // -------- Create event --------
       .addCase(createEvent.pending, (state) => {
         state.actionLoading = true;
         state.actionError = null;
@@ -239,9 +188,10 @@ const eventsSlice = createSlice({
       })
       .addCase(createEvent.rejected, (state, action) => {
         state.actionLoading = false;
-        state.actionError = action.payload || "Failed to create event";
+        state.actionError = action.payload;
       })
-      // Delete Event
+
+      // -------- Delete event --------
       .addCase(deleteEvent.pending, (state) => {
         state.actionLoading = true;
         state.actionError = null;
@@ -255,11 +205,10 @@ const eventsSlice = createSlice({
       })
       .addCase(deleteEvent.rejected, (state, action) => {
         state.actionLoading = false;
-        state.actionError = action.payload || "Failed to delete event";
+        state.actionError = action.payload;
       });
   },
 });
 
 export const { setSearchTerm, clearError } = eventsSlice.actions;
-export { fetchEvents, fetchEventDetails, createEvent, deleteEvent };
 export default eventsSlice.reducer;

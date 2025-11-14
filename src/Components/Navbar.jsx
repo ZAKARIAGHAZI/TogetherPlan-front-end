@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
+import Logo from "./Logo";
 
 const mockLogout = () => ({ type: "auth/logout" });
 
@@ -24,6 +25,8 @@ const Navbar = () => {
     window.location.reload();
   };
 
+  // if (!isAuthenticated) return <NavBarDash showSidebar={showSidebar} />;
+
   return (
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -33,12 +36,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <Calendar className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              TogetherPlan
-            </span>
-          </Link>
+          <Logo />
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
