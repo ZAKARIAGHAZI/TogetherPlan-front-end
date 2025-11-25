@@ -1,68 +1,84 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
+// -------------------- CONFIG --------------------
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api`;
 const token = localStorage.getItem("token");
 
-const apiHeaders = {
-  "Content-Type": "application/json",
-  Accept: "application/json",
-  "X-Requested-With": "XMLHttpRequest",
-  Authorization: `Bearer ${token}`,
-};
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+    Authorization: `Bearer ${token}`,
+  },
+});
 
-// -------------------- API SERVICE --------------------
+// -------------------- API SERVICE (AXIOS) --------------------
 const apiService = {
   fetchEvents: async () => {
-    const response = await fetch(`${API_BASE_URL}/events`, {
-      method: "GET",
-      headers: apiHeaders,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch events");
+    try {
+      const response = await axiosInstance.get("/events");
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch events"
+      );
     }
-
-    return response.json();
   },
 
   fetchEvent: async (eventId) => {
-    const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
-      method: "GET",
-      headers: apiHeaders,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch event details");
+    try {
+      const response = await axiosInstance.get(`/events/${eventId}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch event details"
+      );
     }
-
-    return response.json();
   },
 
   createEvent: async (eventData) => {
-    const response = await fetch(`${API_BASE_URL}/events`, {
-      method: "POST",
-      headers: apiHeaders,
-      body: JSON.stringify(eventData),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to create event");
+    try {
+      const response = await axiosInstance.post("/events", eventData);
+      return response.data.event;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to create event"
+      );
     }
+  },
 
-    return response.json();
+  updateEvent: async (eventId, eventData) => {
+    try {
+      const response = await axiosInstance.put(`/events/${eventId}`, eventData);
+      return response.data.event; // return the updated event object
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to update event"
+      );
+    }
   },
 
   deleteEvent: async (eventId) => {
-    const response = await fetch(`${API_BASE_URL}/events/${eventId}`, {
-      method: "DELETE",
-      headers: apiHeaders,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to delete event");
+    try {
+      await axiosInstance.delete(`/events/${eventId}`);
+      return eventId;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to delete event"
+      );
     }
+  },
 
-    return eventId;
+  submitVote: async (voteData) => {
+    try {
+      const response = await axiosInstance.post("/votes", voteData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to submit vote");
+    }
   },
 };
 
@@ -101,11 +117,37 @@ export const createEvent = createAsyncThunk(
   }
 );
 
+export const updateEvent = createAsyncThunk(
+  "events/updateEvent",
+  async ({ eventId, eventData }, { rejectWithValue }) => {
+    try {
+      return await apiService.updateEvent(eventId, eventData);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const deleteEvent = createAsyncThunk(
   "events/deleteEvent",
   async (eventId, { rejectWithValue }) => {
     try {
       return await apiService.deleteEvent(eventId);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const submitVote = createAsyncThunk(
+  "events/submitVote",
+  async (voteData, { rejectWithValue, getState }) => {
+    try {
+      const response = await apiService.submitVote(voteData);
+      return {
+        ...response,
+        eventId: getState().events.selectedEvent?.id,
+      };
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -142,6 +184,10 @@ const eventsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
       state.actionError = null;
+    },
+
+    clearSelectedEvent: (state) => {
+      state.selectedEvent = null;
     },
   },
 
@@ -191,6 +237,39 @@ const eventsSlice = createSlice({
         state.actionError = action.payload;
       })
 
+      // -------- Update event --------
+      .addCase(updateEvent.pending, (state) => {
+        state.actionLoading = true;
+        state.actionError = null;
+      })
+      .addCase(updateEvent.fulfilled, (state, action) => {
+        state.actionLoading = false;
+
+        // Update the event in the events array
+        const index = state.events.findIndex((e) => e.id === action.payload.id);
+        if (index !== -1) {
+          state.events[index] = action.payload;
+        }
+
+        // Update in filteredEvents array too
+        const filteredIndex = state.filteredEvents.findIndex(
+          (e) => e.id === action.payload.id
+        );
+        if (filteredIndex !== -1) {
+          state.filteredEvents[filteredIndex] = action.payload;
+        }
+
+        // Update selectedEvent if it's the one being updated
+        if (state.selectedEvent?.id === action.payload.id) {
+          state.selectedEvent = action.payload;
+        }
+      })
+      .addCase(updateEvent.rejected, (state, action) => {
+        state.actionLoading = false;
+        state.actionError = action.payload;
+      })
+
+
       // -------- Delete event --------
       .addCase(deleteEvent.pending, (state) => {
         state.actionLoading = true;
@@ -206,9 +285,28 @@ const eventsSlice = createSlice({
       .addCase(deleteEvent.rejected, (state, action) => {
         state.actionLoading = false;
         state.actionError = action.payload;
+      })
+
+      // -------- Submit vote --------
+      .addCase(submitVote.pending, (state) => {
+        state.actionLoading = true;
+        state.actionError = null;
+      })
+      .addCase(submitVote.fulfilled, (state, action) => {
+        state.actionLoading = false;
+
+        if (state.selectedEvent && action.payload.best_date_id) {
+          state.selectedEvent.best_date_id = action.payload.best_date_id;
+        }
+      })
+      .addCase(submitVote.rejected, (state, action) => {
+        state.actionLoading = false;
+        state.actionError = action.payload;
       });
   },
 });
 
-export const { setSearchTerm, clearError } = eventsSlice.actions;
+export const { setSearchTerm, clearError, clearSelectedEvent } =
+  eventsSlice.actions;
+
 export default eventsSlice.reducer;

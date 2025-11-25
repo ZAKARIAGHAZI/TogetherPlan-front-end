@@ -4,13 +4,13 @@ import {
   LayoutDashboard,
   Calendar,
   MessageCircle,
-  BarChart2,
   CalendarDays,
   Users,
-  Settings,
   ChevronRight,
+  Shield,
+  Edit,
 } from "lucide-react";
-import Logo from "./Logo";
+import Logo from "../Logo";
 
 const Sidebar = ({ showSidebar, setShowSidebar }) => {
   const [hoveredItem, setHoveredItem] = useState(null);
@@ -29,23 +29,17 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       color: "from-purple-500 to-pink-500",
     },
     {
+      name: "My Events",
+      icon: <MessageCircle size={20} />,
+      path: "/my-events",
+      color: "from-purple-500 to-pink-500",
+    },
+    {
       name: "Calendar",
       icon: <Calendar size={20} />,
       path: "/calendar",
       color: "from-orange-500 to-red-500",
-    },
-    {
-      name: "Chat",
-      icon: <MessageCircle size={20} />,
-      path: "/chat",
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      name: "Statistics",
-      icon: <BarChart2 size={20} />,
-      path: "/stats",
-      color: "from-indigo-500 to-blue-500",
-    },
+    },    
     {
       name: "Groups",
       icon: <Users size={20} />,
@@ -53,9 +47,9 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       color: "from-pink-500 to-rose-500",
     },
     {
-      name: "Settings",
-      icon: <Settings size={20} />,
-      path: "/settings",
+      name: "profile",
+      icon: <Edit size={20} />,
+      path: "/profile",
       color: "from-gray-500 to-slate-600",
     },
   ];
@@ -101,10 +95,9 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    `group relative flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-200 ${
-                      isActive
-                        ? "bg-white text-gray-900 shadow-md"
-                        : "text-gray-600 hover:bg-white/70 hover:text-gray-900"
+                    `group relative flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-200 ${isActive
+                      ? "bg-white text-gray-900 shadow-md"
+                      : "text-gray-600 hover:bg-white/70 hover:text-gray-900"
                     }`
                   }
                 >
@@ -119,18 +112,16 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
 
                       {/* Icon with gradient on hover/active */}
                       <div
-                        className={`relative z-10 transition-transform duration-200 ${
-                          hoveredItem === item.name || isActive
+                        className={`relative z-10 transition-transform duration-200 ${hoveredItem === item.name || isActive
                             ? "scale-110"
                             : ""
-                        }`}
+                          }`}
                       >
                         <div
-                          className={`p-1.5 rounded-lg ${
-                            isActive
+                          className={`p-1.5 rounded-lg ${isActive
                               ? `bg-linear-to-br ${item.color} text-white shadow-sm`
                               : "text-gray-500 group-hover:text-gray-700"
-                          }`}
+                            }`}
                         >
                           {item.icon}
                         </div>
@@ -138,9 +129,8 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
 
                       {/* Text */}
                       <span
-                        className={`relative z-10 font-medium transition-all duration-200 ${
-                          isActive ? "translate-x-1" : ""
-                        }`}
+                        className={`relative z-10 font-medium transition-all duration-200 ${isActive ? "translate-x-1" : ""
+                          }`}
                       >
                         {item.name}
                       </span>
@@ -190,22 +180,20 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       <button
         onClick={() => setShowSidebar(!showSidebar)}
         type="button"
-        className="absolute top-6 -right-4 z-20 group"
+        className="absolute top-15 -right-7 z-20 group"
       >
         <div
-          className={`h-10 w-10 bg-white border-2 transition-all duration-300 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl ${
-            showSidebar
+          className={`h-10 w-10 bg-white border-2 transition-all duration-300 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl ${showSidebar
               ? "border-blue-200 hover:border-blue-300"
               : "border-gray-200 hover:border-gray-300"
-          }`}
+            }`}
         >
           <ChevronRight
             style={{
               transform: `rotate(${showSidebar ? 180 : 0}deg)`,
             }}
-            className={`h-5 w-5 transition-all duration-300 ${
-              showSidebar ? "text-blue-600" : "text-gray-600"
-            } group-hover:scale-110`}
+            className={`h-5 w-5 transition-all duration-300 ${showSidebar ? "text-blue-600" : "text-gray-600"
+              } group-hover:scale-110`}
           />
         </div>
 

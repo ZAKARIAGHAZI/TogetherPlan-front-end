@@ -3,3 +3,26 @@
 button {
     cursor: pointer;
 }
+
+/* Custom FullCalendar styling */
+.fc {
+  font-family: inherit;
+}
+
+.fc-event {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.fc-event:hover {
+  opacity: 0.85;
+}
+
+.fc-daygrid-event {
+  white-space: normal;
+}
+
+.fc-h-event {
+  border: none;
+}

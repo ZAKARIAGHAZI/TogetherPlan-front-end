@@ -1,4 +1,4 @@
-import Sidebar from "../Components/Sidebar";
+import Sidebar from "../Components/dashboard/Sidebar";
 import Navbar from "../Components/NavBar";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
@@ -20,7 +20,7 @@ const MainLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Navbar */}
         <div className="shrink-0 bg-white border-b border-gray-200 shadow-sm z-20">
-          {!isAuthenticated ? (
+          {isAuthenticated ? (
             <NavBarDash sidebarIsVisible={showSidebar} />
           ) : (
             <Navbar />

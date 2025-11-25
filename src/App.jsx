@@ -5,7 +5,11 @@ import LandingPage from "./Pages/LandingPage.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import EventsPage from "./Pages/Events.jsx";
-import CalendarPage from "./Pages/Calendar.jsx";
+import CalendarPage from "./Pages/CalendarPage.jsx";
+import EventDetailsPage from "./Pages/EventDetailsPage.jsx";
+import MyEventsPage from "./Pages/MyEventsPage.jsx";
+import ProfilePage from "./Pages/ProfilePage.jsx";
+import GroupsPage from "./Pages/GroupsPage.jsx";
 
 function App() {
   return (
@@ -18,8 +22,11 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:eventId" element={<EventDetailsPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="events" element={<EventsPage />} />
+            <Route path="/my-events" element={<MyEventsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/groups" element={<GroupsPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

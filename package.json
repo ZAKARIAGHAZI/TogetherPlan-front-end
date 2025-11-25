@@ -10,6 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.19",
+    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/interaction": "^6.1.19",
+    "@fullcalendar/list": "^6.1.19",
+    "@fullcalendar/react": "^6.1.19",
+    "@fullcalendar/timegrid": "^6.1.19",
     "@hookform/resolvers": "^5.2.2",
     "@reduxjs/toolkit": "^2.9.2",
     "@tailwindcss/vite": "^4.1.16",
@@ -23,6 +29,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.5",
     "react-select": "^5.10.2",
+    "recharts": "^3.5.0",
     "tailwindcss": "^4.1.16",
     "yup": "^1.7.1"
   },
