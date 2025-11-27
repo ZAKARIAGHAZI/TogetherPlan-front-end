@@ -93,7 +93,8 @@ const EventCard = ({ event, onEdit, onDelete, onInvite }) => {
                             Edit
                         </button>
 
-                        {onInvite && (
+                        {isPrivate ? (
+                        onInvite && (
                             <button
                                 onClick={() => onInvite(event)}
                                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors text-sm font-medium"
@@ -101,7 +102,7 @@ const EventCard = ({ event, onEdit, onDelete, onInvite }) => {
                                 <Mail className="h-4 w-4" />
                                 Invite
                             </button>
-                        )}
+                        )) : null}
 
                         {onDelete && (
                             <button

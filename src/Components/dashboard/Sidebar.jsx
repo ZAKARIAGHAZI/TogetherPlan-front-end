@@ -39,7 +39,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       icon: <Calendar size={20} />,
       path: "/calendar",
       color: "from-orange-500 to-red-500",
-    },    
+    },
     {
       name: "Groups",
       icon: <Users size={20} />,
@@ -113,14 +113,14 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                       {/* Icon with gradient on hover/active */}
                       <div
                         className={`relative z-10 transition-transform duration-200 ${hoveredItem === item.name || isActive
-                            ? "scale-110"
-                            : ""
+                          ? "scale-110"
+                          : ""
                           }`}
                       >
                         <div
                           className={`p-1.5 rounded-lg ${isActive
-                              ? `bg-linear-to-br ${item.color} text-white shadow-sm`
-                              : "text-gray-500 group-hover:text-gray-700"
+                            ? `bg-linear-to-br ${item.color} text-white shadow-sm`
+                            : "text-gray-500 group-hover:text-gray-700"
                             }`}
                         >
                           {item.icon}
@@ -184,8 +184,8 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
       >
         <div
           className={`h-10 w-10 bg-white border-2 transition-all duration-300 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl ${showSidebar
-              ? "border-blue-200 hover:border-blue-300"
-              : "border-gray-200 hover:border-gray-300"
+            ? "border-blue-200 hover:border-blue-300"
+            : "border-gray-200 hover:border-gray-300"
             }`}
         >
           <ChevronRight

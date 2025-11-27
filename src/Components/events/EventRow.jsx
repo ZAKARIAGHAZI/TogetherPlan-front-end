@@ -46,7 +46,8 @@ const EventRow = ({ event, onEdit, onDelete, onInvite }) => {
                             <Edit2 className="h-4 w-4" />
                         </button>
 
-                        {onInvite && (
+                        {isPrivate ? (
+                        onInvite && (
                             <button
                                 onClick={() => onInvite(event)}
                                 className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
@@ -54,7 +55,7 @@ const EventRow = ({ event, onEdit, onDelete, onInvite }) => {
                             >
                                 <Mail className="h-4 w-4" />
                             </button>
-                        )}
+                        )) : null}
 
                         {onDelete && (
                             <button

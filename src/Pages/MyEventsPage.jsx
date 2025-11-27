@@ -198,6 +198,7 @@ export default function MyEventsPage() {
                                     onChange={setSelectedCategory}
                                     placeholder="All categories"
                                     isSearchable={false}
+                                    isClearable={true}
                                     styles={{
                                         control: (base) => ({
                                             ...base,

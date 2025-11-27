@@ -128,15 +128,15 @@ const ProfilePage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50/50 p-6">
+        <div className="min-h-screen bg-gray-50/50 p-4 md:p-6">
             <div className="max-w-5xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                    <div className="px-8 pb-8">
+                    <div className="px-4 md:px-8 pb-8">
                         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 -mt-16">
                             {/* Avatar */}
-                            <div className="relative group">
+                            <div className="relative group self-center sm:self-auto">
                                 <div className="h-32 w-32 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white flex items-center justify-center text-4xl font-bold shadow-xl border-4 border-white">
                                     {user?.name?.charAt(0).toUpperCase() || "U"}
                                 </div>
@@ -146,10 +146,10 @@ const ProfilePage = () => {
                             </div>
 
                             {/* User Info */}
-                            <div className="flex-1 pt-16 sm:pt-0">
-                                <h1 className="text-3xl font-bold text-gray-900">{user?.name || "User"}</h1>
+                            <div className="flex-1 pt-4 sm:pt-0 w-full text-center sm:text-left">
+                                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{user?.name || "User"}</h1>
                                 <p className="text-gray-500 mt-1">{user?.email || "email@example.com"}</p>
-                                <div className="flex items-center gap-2 mt-2">
+                                <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                                         <CheckCircle2 size={14} className="mr-1" />
                                         Verified Account
@@ -164,7 +164,7 @@ const ProfilePage = () => {
                             {activeTab === "personal" && (
                                 <button
                                     onClick={() => isEditing ? handleSaveProfile() : setIsEditing(true)}
-                                    className="mt-4 sm:mt-0 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-sm"
+                                    className="mt-4 sm:mt-0 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center"
                                 >
                                     {isEditing ? (
                                         <>
@@ -184,7 +184,7 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-2 border-b border-gray-200 bg-white px-6 rounded-t-2xl pt-6">
+                <div className="flex gap-2 border-b border-gray-200 bg-white px-4 md:px-6 rounded-t-2xl pt-6 overflow-x-auto no-scrollbar">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         return (
@@ -194,7 +194,7 @@ const ProfilePage = () => {
                                     setActiveTab(tab.id);
                                     setIsEditing(false);
                                 }}
-                                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors font-medium text-sm ${activeTab === tab.id
+                                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors font-medium text-sm whitespace-nowrap ${activeTab === tab.id
                                     ? "border-blue-600 text-blue-600"
                                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                                     }`}

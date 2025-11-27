@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEvents } from "../redux/slices/eventsSlice";
 import { fetchGroups } from "../redux/slices/groupsSlice";
@@ -8,7 +8,6 @@ import {
   TrendingUp,
   Clock,
   ArrowUpRight,
-  MoreHorizontal,
   MapPin,
   CalendarDays
 } from "lucide-react";
@@ -31,6 +30,7 @@ const Dashboard = () => {
   const { events, loading } = useSelector((state) => state.events);
   const { groups } = useSelector((state) => state.groups);
   const { user } = useSelector((state) => state.auth);
+  const [timePeriod, setTimePeriod] = useState(6); // 6 months or 12 months
 
   useEffect(() => {
     dispatch(fetchEvents());
@@ -55,9 +55,11 @@ const Dashboard = () => {
     const months = {};
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    // Initialize last 6 months
+    // Initialize months based on selected time period
     const today = new Date();
-    for (let i = 5; i >= 0; i--) {
+    const monthsToShow = timePeriod === 12 ? 11 : 5; // 12 months or 6 months
+
+    for (let i = monthsToShow; i >= 0; i--) {
       const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
       const key = `${monthNames[d.getMonth()]}`;
       months[key] = 0;
@@ -75,7 +77,7 @@ const Dashboard = () => {
     });
 
     return Object.entries(months).map(([name, count]) => ({ name, events: count }));
-  }, [events]);
+  }, [events, timePeriod]);
 
   const categoryData = useMemo(() => {
     const categories = {};
@@ -90,11 +92,11 @@ const Dashboard = () => {
   const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#10b981", "#f59e0b"];
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50/50 space-y-6">
+    <div className="p-4 md:p-6 min-h-screen bg-gray-50/50 space-y-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
             Welcome back, {user?.name?.split(" ")[0] || "User"}! 👋
           </h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -102,7 +104,7 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+          <span className="text-xs md:text-sm text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
             {new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </span>
         </div>
@@ -147,12 +149,16 @@ const Dashboard = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="lg:col-span-2 bg-white p-3 md:p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Events Overview</h3>
-            <select className="text-sm border-none bg-gray-50 rounded-lg px-3 py-1 text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors">
-              <option>Last 6 Months</option>
-              <option>Last Year</option>
+            <select
+              value={timePeriod}
+              onChange={(e) => setTimePeriod(Number(e.target.value))}
+              className="text-sm border-none bg-gray-50 rounded-lg px-3 py-1 text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+              <option value={6}>Last 6 Months</option>
+              <option value={12}>Last Year</option>
             </select>
           </div>
           <div className="h-[300px] w-full">
@@ -194,8 +200,8 @@ const Dashboard = () => {
         </div>
 
         {/* Pie Chart */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Categories</h3>
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-gray-100 shadow-sm overflow-scroll ">
+          <h3 className="text-lg font-semibold text-gray-900 ">Categories</h3>
           <div className="h-[250px] w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -227,17 +233,17 @@ const Dashboard = () => {
 
       {/* Recent Events Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+        <div className="p-4 md:p-6 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">Recent Events</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50/50">
               <tr>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-6">Event Name</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-6">Date</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-6">Location</th>
-                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-6">Status</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4 md:px-6">Event Name</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4 md:px-6">Date</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4 md:px-6">Location</th>
+                <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4 md:px-6">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -253,7 +259,7 @@ const Dashboard = () => {
 
                 return (
                   <tr key={event.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 md:px-6">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                           <Calendar size={20} />
@@ -264,16 +270,16 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">
+                    <td className="py-4 px-4 md:px-6 text-sm text-gray-600">
                       {dateStr}
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 md:px-6">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <MapPin size={14} className="text-gray-400" />
                         <span className="truncate max-w-[150px]">{event.location}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 md:px-6">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${event.privacy === 'private'
                         ? 'bg-purple-100 text-purple-800'
                         : 'bg-green-100 text-green-800'

@@ -33,7 +33,7 @@ const NavBarDash = ({ sidebarIsVisible }) => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md py-3 px-6 flex items-center justify-between gap-4 border-b border-gray-200/80 shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md py-3 px-4 md:px-6 flex items-center justify-between gap-4 border-b border-gray-200/80 shadow-sm transition-all duration-300">
       {/* App Logo */}
       <div className="transition-all duration-200" >
         {!sidebarIsVisible && <Logo />}

@@ -46,7 +46,7 @@ const AboutSection = () => (
                 </ul>
             </div>
 
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center ">
             <Lottie
             animationData={EventAnimation}
             loop={true}

@@ -154,33 +154,33 @@ export default function CalendarPage() {
     label: cat.charAt(0).toUpperCase() + cat.slice(1),
   }));
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-blue-50/30 to-gray-50 p-6 lg:p-10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-blue-50/30 to-gray-50 p-4 md:p-6 lg:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-2 mb-2">
             <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
               Calendar
             </h1>
           </div>
-          <p className="text-gray-600 ml-3">
+          <p className="text-gray-600 ml-3 text-sm md:text-base">
             Visualize all your events in the calendar
           </p>
         </div>
 
         {/* Toolbar */}
-        <div className="bg-white rounded-3xl p-5 mb-6 shadow-sm">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+        <div className="bg-white rounded-3xl p-4 md:p-5 mb-6 shadow-sm">
+          <div className="flex flex-col xl:flex-row gap-4 items-center justify-between">
             {/* Navigation */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
               <button
                 onClick={handleToday}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors w-full sm:w-auto"
               >
                 Today
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto bg-gray-50 sm:bg-transparent p-2 sm:p-0 rounded-lg">
                 <button
                   onClick={handlePrevious}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -188,7 +188,7 @@ export default function CalendarPage() {
                 >
                   <ChevronLeft className="h-5 w-5 text-gray-600" />
                 </button>
-                <h2 className="text-lg font-semibold text-gray-900 min-w-[200px] text-center">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900 min-w-[150px] sm:min-w-[200px] text-center truncate">
                   {currentTitle}
                 </h2>
                 <button
@@ -202,15 +202,16 @@ export default function CalendarPage() {
             </div>
 
             {/* Filters & View Toggle */}
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex flex-col sm:flex-row gap-3 items-center w-full xl:w-auto">
               {/* Category Filter */}
-              <div className="min-w-[180px]">
+              <div className="w-full sm:w-[180px]">
                 <ClientSelect
                   options={categoryOptions}
                   value={selectedCategory}
                   onChange={setSelectedCategory}
                   placeholder="All categories"
                   isSearchable={false}
+                  isClearable={true}
                   styles={{
                     control: (base) => ({
                       ...base,
@@ -227,13 +228,13 @@ export default function CalendarPage() {
               </div>
 
               {/* View Toggle */}
-              <div className="flex border-2 border-gray-200 rounded-full overflow-hidden">
+              <div className="flex border-2 border-gray-200 rounded-full overflow-hidden w-full sm:w-auto justify-center">
                 <button
                   onClick={() => handleViewChange("dayGridMonth")}
                   title="Month View"
                   className={`px-3 py-2 transition-colors ${currentView === "dayGridMonth"
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   <Grid3X3 className="h-5 w-5" />
@@ -242,8 +243,8 @@ export default function CalendarPage() {
                   onClick={() => handleViewChange("timeGridWeek")}
                   title="Week View"
                   className={`px-3 py-2 transition-colors ${currentView === "timeGridWeek"
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   <Clock className="h-5 w-5" />
@@ -252,8 +253,8 @@ export default function CalendarPage() {
                   onClick={() => handleViewChange("listMonth")}
                   title="List View"
                   className={`px-3 py-2 transition-colors ${currentView === "listMonth"
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   <List className="h-5 w-5" />

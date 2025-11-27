@@ -63,26 +63,26 @@ export default function EventsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-blue-50/30 to-gray-50 p-6 lg:p-10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-blue-50/30 to-gray-50 p-4 md:p-6 lg:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="mb-8">
+        <div className="mb-6 md:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">
                   Events
                 </h1>
               </div>
-              <p className="text-gray-600 ml-3">
+              <p className="text-gray-600 ml-3 text-sm md:text-base">
                 Manage and schedule all your events
               </p>
             </div>
 
             <button
               onClick={() => setIsEventFormOpen(true)}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm hover:shadow"
+              className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm hover:shadow w-full sm:w-auto"
             >
               <Plus className="h-4 w-4" />
               Create Event
@@ -96,7 +96,7 @@ export default function EventsPage() {
           errorMessage={formError}
         />
         {/* Barre de recherche et filtres */}
-        <div className="bg-white rounded-3xl p-5 mb-8 shadow-sm">
+        <div className="bg-white rounded-3xl p-4 md:p-5 mb-6 md:mb-8 shadow-sm">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             {/* Barre de recherche */}
             <div className="flex-1 w-full relative">
@@ -106,20 +106,21 @@ export default function EventsPage() {
                 placeholder="Search event by title..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-full focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-150  outline-none"
+                className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-full focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-150 outline-none"
               />
             </div>
 
             {/* Filtres et boutons de vue */}
-            <div className="flex flex-wrap justify-end gap-3 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-3">
               {/* Sélecteur de catégorie avec ClientSelect */}
-              <div className="min-w-[120px] sm:min-w-[200px]">
+              <div className="w-full sm:w-[200px]">
                 <ClientSelect
                   options={categoryOptions}
                   value={selectedCategory}
                   onChange={setSelectedCategory}
                   placeholder="All Categories"
                   isSearchable={false}
+                  isClearable={true}
                   styles={{
                     control: (base) => ({
                       ...base,
@@ -135,13 +136,13 @@ export default function EventsPage() {
                 />
               </div>
               {/* Boutons de vue */}
-              <div className="flex border-2 border-gray-200 rounded-full overflow-hidden self-center ml-2">
+              <div className="flex border-2 border-gray-200 rounded-full overflow-hidden self-center sm:ml-auto lg:ml-2 w-full sm:w-auto justify-center">
                 <button
                   onClick={() => setViewMode("grid")}
                   title="Grid View"
                   className={`p-3 transition-colors ${viewMode === "grid"
-                      ? "bg-blue-600 text-white shadow-inner"
-                      : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white shadow-inner"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   <Grid3X3 className="h-5 w-5" />
@@ -150,8 +151,8 @@ export default function EventsPage() {
                   onClick={() => setViewMode("list")}
                   title="List View"
                   className={`p-3 transition-colors ${viewMode === "list"
-                      ? "bg-blue-600 text-white shadow-inner"
-                      : "text-gray-600 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white shadow-inner"
+                    : "text-gray-600 hover:bg-gray-100"
                     }`}
                 >
                   <List className="h-5 w-5" />

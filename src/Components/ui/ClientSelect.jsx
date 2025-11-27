@@ -7,11 +7,11 @@ const customStyles = {
     minHeight: '44px',
     borderRadius: '22px',
     borderWidth: '2px',
-    borderColor: state.isFocused 
+    borderColor: state.isFocused
       ? '#3b82f6' // blue-500
       : '#d1d5db', // gray-300
-    boxShadow: state.isFocused 
-      ? '0 0 0 3px rgba(59, 130, 246, 0.1)' 
+    boxShadow: state.isFocused
+      ? '0 0 0 3px rgba(59, 130, 246, 0.1)'
       : 'none',
     backgroundColor: '#f9fafb', // gray-50
     transition: 'all 0.2s ease',
@@ -20,7 +20,7 @@ const customStyles = {
       borderColor: '#3b82f6', // blue-500
     },
   }),
-  
+
   valueContainer: (provided) => ({
     ...provided,
     padding: '12px 16px',
@@ -75,9 +75,9 @@ const customStyles = {
     fontSize: '0.9375rem',
     lineHeight: '1.5',
     color: state.isSelected ? '#ffffff' : '#1f2937',
-    backgroundColor: state.isSelected 
+    backgroundColor: state.isSelected
       ? '#3b82f6'
-      : state.isFocused 
+      : state.isFocused
         ? '#f3f4f6'
         : 'transparent',
     '&:hover': {
@@ -162,6 +162,7 @@ export default function ClientSelect({
   onChange,
   isMulti = false,
   isSearchable = true,
+  isClearable = false,
   className = '',
   classNamePrefix = 'react-select',
   placeholder = 'Sélectionner...',
@@ -179,8 +180,8 @@ export default function ClientSelect({
       <div className={`w-full ${className}`}>
         {label && <label className="block text-sm font-medium mb-1 text-gray-800">{label}</label>}
         <div className="relative">
-          <select 
-            className="w-full h-10 pl-3 pr-8 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed" 
+          <select
+            className="w-full h-10 pl-3 pr-8 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled
           >
             <option value="">{placeholder}</option>
@@ -206,6 +207,7 @@ export default function ClientSelect({
           onChange={onChange}
           isMulti={isMulti}
           isSearchable={isSearchable}
+          isClearable={isClearable}
           classNamePrefix={classNamePrefix}
           placeholder={placeholder}
           noOptionsMessage={() => "Aucune option disponible"}
@@ -221,7 +223,7 @@ export default function ClientSelect({
         {error && (
           <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="text-red-600">
-              <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm1 13H7V7h2v6zm0-8H7V3h2v2z"/>
+              <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm1 13H7V7h2v6zm0-8H7V3h2v2z" />
             </svg>
             {error}
           </p>

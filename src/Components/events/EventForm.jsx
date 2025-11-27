@@ -1,4 +1,6 @@
 import { useForm, useFieldArray } from "react-hook-form";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 import {
   X,
   Plus,
@@ -40,6 +42,21 @@ export default function EventForm({ isOpen, onClose, onSubmit, errorMessage, isL
   });
 
   const privacy = watch("privacy");
+  const [groups, setGroups] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchGroups = async () => {
+        try {
+          const response = await api.get("/groups?created_by_me=true");
+          setGroups(response.data);
+        } catch (error) {
+          console.error("Failed to fetch groups", error);
+        }
+      };
+      fetchGroups();
+    }
+  }, [isOpen]);
 
   const handleFormSubmit = (data) => {
     const payload = {
@@ -239,11 +256,12 @@ export default function EventForm({ isOpen, onClose, onSubmit, errorMessage, isL
                   {...register("group_id")}
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none bg-white"
                 >
-                  <option value="">No group</option>
-                  <option value="1">Marketing Team</option>
-                  <option value="2">Development Team</option>
-                  <option value="3">Management</option>
-                  <option value="4">Human Resources</option>
+                  <option value="">Select a group</option>
+                  {groups.map((group) => (
+                    <option key={group.id} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             )}
